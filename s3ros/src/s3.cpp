@@ -113,8 +113,9 @@ namespace awsros
             {
                 auto toUpload = uploadQueue_.front();
                 uploadQueue_.pop_front();
-                string bucketName = toUpload.first;
-                string filename = toUpload.second;
+                string bucketName = get<0>(toUpload);
+                string key = get<1>(toUpload);
+                string filename = get<2>(toUpload);
 
                 if (!uploadFileToBucket(bucketName, filename))
                 {
@@ -129,7 +130,7 @@ namespace awsros
     // Add a local file to upload queue
     void S3::localUploadCB(const awsros::UploadConstPtr& msg)
     {
-        uploadQueue_.push_back(pair<string,string>(msg->bucket, msg->filepath));
+        uploadQueue_.push_back(make_tuple(msg->bucket, msg->key, msg->filepath));
     }
 
     // Toggle whether we're uploading files
