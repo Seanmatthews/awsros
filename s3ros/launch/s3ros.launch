@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+  <group ns="s3ros">
+    <node name="s3ros" pkg="s3ros" type="s3ros" respawn="true" output="screen"/>
+  </group>
+</launch>
