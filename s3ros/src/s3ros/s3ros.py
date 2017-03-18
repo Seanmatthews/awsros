@@ -8,6 +8,10 @@ import sys
 
 
 class s3ros:
+    """
+    Simple class for interfacing S3 functionality. 
+    Currently limited to upload.
+    """
     
     def __init__(self):
         """Init and run main loop
