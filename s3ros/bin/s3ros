@@ -2,13 +2,13 @@
 
 import roslib
 import rospy
-import s3ros
+from s3ros import s3ros
 
 if __name__ == '__main__':
     # Initialize the node and name it.
     rospy.init_node('s3ros')
     # Go to class functions that do all the heavy lifting. Do error checking.
     try:
-        n = s3ros.s3ros()
+        n = s3ros()
     except rospy.ROSInterruptException:
         pass
