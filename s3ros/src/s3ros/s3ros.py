@@ -1,7 +1,7 @@
 from aws_msgs.msg import Upload
 import boto3
+from collections import deque
 import roslib
-from Queue import Queue
 import rospy
 from std_msgs.msg import Bool
 import sys
@@ -17,7 +17,7 @@ class s3ros:
         """Init and run main loop
         """
         self.uploadsPaused_ = False
-        self.uploadQueue_ = Queue()
+        self.uploadQueue_ = deque()
 
         client = boto3.client('s3')
 
@@ -28,8 +28,8 @@ class s3ros:
         # Main loop monitors upload queue and uploads when necessary
         r = rospy.Rate(20)
         while not rospy.is_shutdown():
-            if not self.uploadsPaused_ and not self.uploadQueue_.empty():
-                toUpload = self.uploadQueue_.get()
+            if not self.uploadsPaused_ and len(self.uploadQueue_):
+                toUpload = self.uploadQueue_.popleft()
                 try:
                     rospy.loginfo("Attempting to upload {} to {}/{}".format(*toUpload))
                     rsp = client.upload_file(toUpload[0], toUpload[1], toUpload[2])
@@ -39,20 +39,23 @@ class s3ros:
 
             r.sleep()
 
-        if not uploadQueue_.empty():
+        if len(self.uploadQueue_):
             rospy.logwarn("Upload queue not empty")
             
                 
     def pauseUploadsCB(self, boolMsg):
         """Callback for toggling uploads
         """
+        rospy.loginfo("Uploads paused? {}".format(boolMsg.data == True))
         self.uploadsPaused_ = boolMsg.data
 
         
     def localUploadCB(self, upMsg):
-        """Callback for adding a local file to the upload queue
+        """Callback for adding a local file to the upload queue.
         """
         rospy.loginfo("Adding {} to the upload queue".format(upMsg.filepath))
-        self.uploadQueue_.put((upMsg.filepath, upMsg.bucket, upMsg.key))
-        
+        self.uploadQueue_.append((upMsg.filepath, upMsg.bucket, upMsg.key))
+
+        # Automatically remove duplicates
+        self.uploadQueue_ = deque(set(self.uploadQueue_))
 
