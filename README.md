@@ -12,3 +12,8 @@ and then wait for a signal that a particular robot has returned with its video d
 Presumably, the robots are connected to a network, but we may not wish to clog that
 network with large amounts of video data while we send higher-priority control commands.
 I'm certain you can find alternative solutions for these use cases, but I like this one.
+
+## Packages
+
+### s3ros
+Provides basic upload functionality to S3 buckets.
