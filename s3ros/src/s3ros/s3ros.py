@@ -22,8 +22,8 @@ class s3ros:
         client = boto3.client('s3')
 
         # Pubs, Subs & Srvs
-        rospy.Subscriber("uploadLocalFile", Upload, self.localUploadCB)
-        rospy.Subscriber("pauseUploads", Bool, self.pauseUploadsCB)
+        rospy.Subscriber("s3ros/uploadLocalFile", Upload, self.localUploadCB)
+        rospy.Subscriber("s3ros/pauseUploads", Bool, self.pauseUploadsCB)
 
         # Main loop monitors upload queue and uploads when necessary
         r = rospy.Rate(20)
