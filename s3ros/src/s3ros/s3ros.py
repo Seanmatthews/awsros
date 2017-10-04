@@ -1,6 +1,7 @@
 from aws_msgs.msg import Upload
 import boto3
 from collections import deque
+import os
 import roslib
 import rospy
 from std_msgs.msg import Bool
@@ -30,10 +31,14 @@ class s3ros:
         while not rospy.is_shutdown():
             if not self.uploadsPaused_ and len(self.uploadQueue_):
                 toUpload = self.uploadQueue_.popleft()
+                if not os.path.isfile(toUpload):
+                    continue
+                
                 try:
                     rospy.loginfo("Attempting to upload {} to {}/{}".format(*toUpload))
                     rsp = client.upload_file(toUpload[0], toUpload[1], toUpload[2])
-                    
+
+                except boto3.exceptions.
                 except boto3.exceptions.S3UploadFailedError:
                     rospy.logerror("Could not uplaod {0} to bucket {1}/{2}".format(myfun(*toUpload)))
 
