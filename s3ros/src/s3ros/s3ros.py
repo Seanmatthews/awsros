@@ -31,7 +31,8 @@ class s3ros:
         while not rospy.is_shutdown():
             if not self.uploadsPaused_ and len(self.uploadQueue_):
                 toUpload = self.uploadQueue_.popleft()
-                if not os.path.isfile(toUpload):
+
+                if not os.path.isfile(toUpload[2]):
                     continue
                 
                 try:
@@ -62,4 +63,3 @@ class s3ros:
 
         # Automatically remove duplicates
         self.uploadQueue_ = deque(set(self.uploadQueue_))
-
