@@ -32,7 +32,8 @@ class s3ros:
             if not self.uploadsPaused_ and len(self.uploadQueue_):
                 toUpload = self.uploadQueue_.popleft()
 
-                if not os.path.isfile(toUpload[2]):
+                if not os.path.isfile(toUpload[0]):
+                    rospy.logwarn("{} is not a file".format(toUpload[0]))
                     continue
                 
                 try:
