@@ -1,3 +1,6 @@
 <launch>
-    <node name="s3ros" pkg="s3ros" type="s3ros" respawn="true" output="screen"/>
+    <arg name="use_machine" default="false" />
+
+    <node name="s3ros" pkg="s3ros" type="s3ros" respawn="true" output="screen" unless="$(arg use_machine)" />
+    <node name="s3ros" pkg="s3ros" type="s3ros" respawn="true" output="screen" machine="snapdragon" if="$(arg use_machine)" />
 </launch>
