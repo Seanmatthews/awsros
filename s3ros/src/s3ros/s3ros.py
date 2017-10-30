@@ -29,7 +29,9 @@ class s3ros:
         # Main loop monitors upload queue and uploads when necessary
         r = rospy.Rate(20)
         while not rospy.is_shutdown():
-            if not self.uploadsPaused_ and len(self.uploadQueue_):
+            if len(self.uploadQueue_) > 0:
+
+                rospy.loginfo("Upload queue not empty")
                 toUpload = self.uploadQueue_.popleft()
 
                 if not os.path.isfile(toUpload[0]):
@@ -39,13 +41,15 @@ class s3ros:
                 try:
                     rospy.loginfo("Attempting to upload {} to {}/{}".format(*toUpload))
                     rsp = client.upload_file(toUpload[0], toUpload[1], toUpload[2])
-
+                    
                 except boto3.exceptions.S3UploadFailedError:
                     rospy.logerror("Could not uplaod {0} to bucket {1}/{2}".format(myfun(*toUpload)))
-
+                except Exception as e:
+                    rospy.logerror(e)
+                    
             r.sleep()
 
-        if len(self.uploadQueue_):
+        if len(self.uploadQueue_) > 0:
             rospy.logwarn("Upload queue not empty")
             
                 
