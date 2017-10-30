@@ -46,6 +46,9 @@ class s3ros:
                     rospy.logerror("Could not uplaod {0} to bucket {1}/{2}".format(myfun(*toUpload)))
                 except Exception as e:
                     rospy.logerror(e)
+
+            else:
+                rospy.loginfo_throttle(1, "Upload queue empty")
                     
             r.sleep()
 
