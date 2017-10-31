@@ -41,7 +41,7 @@ class s3ros:
                     rsp = client.upload_file(toUpload[0], toUpload[1], toUpload[2])
                     
                 except boto3.exceptions.S3UploadFailedError:
-                    rospy.logerror("Could not uplaod {0} to bucket {1}/{2}".format(myfun(*toUpload)))
+                    rospy.logerror("Could not uplaod {0} to bucket {1}/{2}".format(*toUpload))
                 except Exception as e:
                     rospy.logerror(e)
 
