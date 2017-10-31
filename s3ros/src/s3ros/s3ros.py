@@ -30,8 +30,6 @@ class s3ros:
         r = rospy.Rate(20)
         while not rospy.is_shutdown():
             if len(self.uploadQueue_) > 0:
-
-                rospy.loginfo("Upload queue not empty")
                 toUpload = self.uploadQueue_.popleft()
 
                 if not os.path.isfile(toUpload[0]):
@@ -47,9 +45,6 @@ class s3ros:
                 except Exception as e:
                     rospy.logerror(e)
 
-            else:
-                rospy.loginfo_throttle(1, "Upload queue empty")
-                    
             r.sleep()
 
         if len(self.uploadQueue_) > 0:
