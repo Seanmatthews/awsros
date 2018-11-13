@@ -4,6 +4,7 @@ from collections import deque
 import os
 import roslib
 import rospy
+from botocore.exceptions import HTTPClientError
 from std_msgs.msg import Bool
 import sys
 
@@ -20,7 +21,16 @@ class s3ros:
         self.uploadsPaused_ = False
         self.uploadQueue_ = deque()
 
-        client = boto3.client('s3')
+        # Get alternate endpoint for base station video offload
+        endpoint = rospy.get_param('~s3_endpoint')
+        if "" == endpoint:
+            endpoint = None
+
+        try:
+            client = boto3.client('s3', endpoint=endpoint)
+        except HTTPClientError as e:
+            rospy.logerror('Unable to create S3 client with endpoint {}'.format(endpoint))
+            raise e
 
         # Pubs, Subs & Srvs
         rospy.Subscriber("s3ros/uploadLocalFile", Upload, self.localUploadCB)
