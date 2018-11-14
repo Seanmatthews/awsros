@@ -60,9 +60,9 @@ class s3ros:
                     rospy.loginfo("Upload succeeded")
 
                 except boto3.exceptions.S3UploadFailedError:
-                    rospy.logerror("Could not uplaod {0} to bucket {1}/{2}".format(*toUpload))
+                    rospy.logerr("Could not uplaod {0} to bucket {1}/{2}".format(*toUpload))
                 except Exception as e:
-                    rospy.logerror(e)
+                    rospy.logerr(e)
 
             r.sleep()
 
