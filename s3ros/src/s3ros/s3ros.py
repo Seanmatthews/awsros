@@ -18,7 +18,7 @@ class s3ros:
     Simple class for interfacing S3 functionality. 
     Currently limited to upload.
     """
-    HOLYWTF
+
     def __init__(self):
         """Init and run main loop
         """
