@@ -6,7 +6,6 @@ from collections import deque
 import os
 import roslib
 import rospy
-from botocore.exceptions import HTTPClientError
 from std_msgs.msg import Bool
 import sys
 
@@ -26,19 +25,26 @@ class s3ros:
         self.uploadQueue_ = deque()
 
         # Get alternate endpoint for base station video offload
-        endpoint = rospy.get_param('~s3_endpoint')
+        endpoint = rospy.get_param("~s3_endpoint")
         if "" == endpoint:
             endpoint = None
         else:
-            rospy.loginfo("Using alternate S3 endpoint {}".format(endpoint))
+            rospy.loginfo("Using alternate S3 endpoint: {}".format(endpoint))
 
-        s3 = boto3.resource(
+        # Get non-default profile (for credentials)
+        profile = rospy.get_param("~aws_profile")
+        if "" == profile:
+            profile = None
+        else:
+            rospy.loginfo("Using alternate S3 profile: {}".format(profile))
+
+        session = boto3.Session(profile_name=profile)
+        client = session.client(
             service_name='s3',
             endpoint_url=endpoint
         )
 
         upload_config = TransferConfig(multipart_threshold=MULTIPART_THRESHOLD)
-        client = s3.meta.client
 
         # Pubs, Subs & Srvs
         rospy.Subscriber("s3ros/uploadLocalFile", Upload, self.localUploadCB)
@@ -59,8 +65,9 @@ class s3ros:
                     rsp = client.upload_file(toUpload[0], toUpload[1], toUpload[2], Config=upload_config)
                     rospy.loginfo("Upload succeeded")
 
-                except boto3.exceptions.S3UploadFailedError:
+                except boto3.exceptions.S3UploadFailedError as e:
                     rospy.logerr("Could not uplaod {0} to bucket {1}/{2}".format(*toUpload))
+                    rospy.logerr(e)
                 except Exception as e:
                     rospy.logerr(e)
 

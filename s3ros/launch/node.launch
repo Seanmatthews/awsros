@@ -1,9 +1,11 @@
 <launch>
     <arg name="use_machine" default="false" />
     <arg name="s3_endpoint" default="" />
+    <arg name="aws_profile" default="" />
 
     <node name="$(anon s3ros)" pkg="s3ros" type="s3ros" respawn="true" output="screen" unless="$(arg use_machine)">
         <param name="s3_endpoint" value="$(arg s3_endpoint)" />
+        <param name="aws_profile" value="$(arg aws_profile)" />
     </node>
     <node name="$(anon s3ros)" pkg="s3ros" type="s3ros" respawn="true" output="screen" machine="snapdragon" if="$(arg use_machine)" />
 </launch>
