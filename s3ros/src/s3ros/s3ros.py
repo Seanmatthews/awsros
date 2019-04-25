@@ -1,14 +1,11 @@
-from aws_msgs.msg import Upload
+import os
+from collections import deque
 
 import boto3
-from boto3.s3.transfer import TransferConfig
-from collections import deque
-import os
-import roslib
 import rospy
-from botocore.exceptions import HTTPClientError
+from aws_msgs.msg import Upload
+from boto3.s3.transfer import TransferConfig
 from std_msgs.msg import Bool
-import sys
 
 MULTIPART_THRESHOLD = 5 * 1024 * 1024
 
@@ -55,12 +52,13 @@ class s3ros:
                     continue
                 
                 try:
-                    rospy.loginfo("Attempting to upload {} to {}/{}".format(*toUpload))
+                    rospy.loginfo("Attempting to upload {} to {}/{}/{}".format(toUpload[0], endpoint, toUpload[1], toUpload[2]))
                     rsp = client.upload_file(toUpload[0], toUpload[1], toUpload[2], Config=upload_config)
                     rospy.loginfo("Upload succeeded")
 
-                except boto3.exceptions.S3UploadFailedError:
-                    rospy.logerr("Could not uplaod {0} to bucket {1}/{2}".format(*toUpload))
+                except boto3.exceptions.S3UploadFailedError as e:
+                    rospy.logerr("Could not upload {0} to bucket {1}/{2}".format(*toUpload))
+                    rospy.logerr(e)
                 except Exception as e:
                     rospy.logerr(e)
 
@@ -73,7 +71,7 @@ class s3ros:
     def pauseUploadsCB(self, boolMsg):
         """Callback for toggling uploads
         """
-        rospy.loginfo("Uploads paused? {}".format(boolMsg.data == True))
+        rospy.loginfo("Uploads paused? {}".format(boolMsg.data is True))
         self.uploadsPaused_ = boolMsg.data
 
         
